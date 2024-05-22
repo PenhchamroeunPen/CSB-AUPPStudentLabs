@@ -19,17 +19,21 @@ class SchoolAssessmentAnalyzer:
                 # Assuming the text file has a specific format that can be read as a DataFrame
                 self.data = pd.read_csv(file, delimiter='\t')
 
-    def transfer_data(self, source_file, destination_file):
+    def transfer_data(self, firstfile, secondfile):
         # Transfer and merge data based on file extensions
         try:
-            if source_file.endswith('.csv') and destination_file.endswith('.csv'):
-                frames = [pd.read_csv(source_file), pd.read_csv(destination_file)]
-            elif source_file.endswith('.xlsx') and destination_file.endswith('.xlsx'):
-                frames = [pd.read_excel(source_file), pd.read_excel(destination_file)]
+            if firstfile.endswith('.csv') and secondfile.endswith('.csv'):
+                frames = [pd.read_csv(firstfile), pd.read_csv(secondfile)]
+                self.merged_file = pd.concat(frames, ignore_index=True)
+                with open('merged_file.csv', 'w') as file:
+                    self.merged_file.to_csv(file, index=False)
+            elif firstfile.endswith('.xlsx') and secondfile.endswith('.xlsx'):
+                frames = [pd.read_excel(firstfile), pd.read_excel(secondfile)]
+                self.merged_file = pd.concat(frames, ignore_index=True)
+                with open('merged_file.xlsx', 'wb') as file:
+                    self.merged_file.to_excel(file, index=False)
             else:
                 raise ValueError("Unsupported file format combination")
-            
-            self.merged_file = pd.concat(frames, ignore_index=True)
             return self.merged_file
         except Exception as e:
             return f'An error occurred: {str(e)}'
@@ -79,7 +83,6 @@ class SchoolAssessmentAnalyzer:
         self.rec3 = f'Investigate potential issues in the {self.worst_semester} semester, which has the lowest overall performance.'
         self.rec4 = f'Analyze what contributes to the success in the {self.best_semester} semester, which has the highest overall performance.'
         self.rec5 = 'Students struggling in their courses are encouraged to seek help from the top students in their best courses.'
-
 
     def generate_summary(self):
         # Generate summary report for the school principal
